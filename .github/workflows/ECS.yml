@@ -44,18 +44,20 @@ jobs:
         cluster: API-Go
         wait-for-service-stability: true
         
-   - name: Requisição
-    run: wget LB-API-Go-908865819.us-east-2.elb.amazonaws.com:8000/bruno
-    
+# ...
+
+    - name: Requisição
+      continue-on-error: true
+      run: echo "REQUEST=0" >> $GITHUB_ENV ; sleep 30s ; wget LB-API-Go-908865819.us-east-2.elb.amazonaws.com:8000/leo || echo "REQUEST=1" >> $GITHUB_ENV        
+
     - name: Deploy Amazon ECS task definition
+      if: ${{ env.REQUEST != 0 }}
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition:  steps.task-def.outputs.task-definition.old
+        task-definition: task-definition.json.old
         service: Servico_API-Go
         cluster: API-Go
         wait-for-service-stability: true
-
-
 
 
 
